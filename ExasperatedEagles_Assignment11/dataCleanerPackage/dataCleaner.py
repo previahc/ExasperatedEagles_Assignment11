@@ -80,7 +80,7 @@ class DataCleaner:
         # Step 1: Identify rows that need zip codes and prepare city-state pairs
         for index, row in self.data.iterrows():
             full_address = row.get("Full Address", "")
-            #print(full_address)
+            print(full_address)
             if isinstance(full_address, str):
                 # Check if zip code is missing
                 if not any(part.isdigit() and len(part) == 5 for part in full_address.split(" ")):
@@ -122,6 +122,5 @@ class DataCleaner:
             zip_code = city_state_zip_map.get(city_state)
             if zip_code:
                 self.data.at[index, "Full Address"] = f"{full_address} {zip_code}"
-                #print(f"Added zip code {zip_code} to address: {full_address}.")
-
+                print(f"Added zip code {zip_code} to address: {full_address}.")
 
