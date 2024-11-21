@@ -124,3 +124,50 @@ class DataCleaner:
                 self.data.at[index, "Full Address"] = f"{full_address} {zip_code}"
                 print(f"Added zip code {zip_code} to address: {full_address}.")
 
+    def clean_transaction_number(self):
+        """Ensures the 'Transaction Number' column is numeric and handles null/blank values."""
+        self.data['Transaction Number'] = pd.to_numeric(self.data['Transaction Number'], errors='coerce')
+        self.data['Transaction Number'].fillna(0, inplace=True)  # Replace nulls with 0 or other appropriate value
+        print("Transaction Number column cleaned.")
+
+    def clean_fuel_quantity(self):
+        """Ensures 'Fuel Quantity' is numeric and rounded to appropriate decimals."""
+        self.data['Fuel Quantity'] = pd.to_numeric(self.data['Fuel Quantity'], errors='coerce').round(2)
+        print("Fuel Quantity column cleaned.")
+
+    def fix_full_address(self):
+        """Corrects sequences in the 'Full Address' column."""
+        corrected_addresses = []
+        for address in self.data['Full Address']:
+            if isinstance(address, str):
+                parts = [part.strip() for part in address.split(',') if part.strip()]
+                corrected_addresses.append(", ".join(parts))
+            else:
+                corrected_addresses.append(address)
+        self.data['Full Address'] = corrected_addresses
+        print("Full Address column corrected.")
+
+    def standardize_fuel_type(self):
+        """Standardizes 'Fuel Type' to upper case and abbreviations."""
+        def standardize_type(fuel):
+            mapping = {
+                'liquid natural gas': 'LNG',
+                'lng': 'LNG',
+                'methanol': 'METH',
+                'gas': 'GAS'
+            }
+            return mapping.get(fuel.lower(), fuel.upper())
+        
+        self.data['Fuel Type'] = self.data['Fuel Type'].apply(lambda x: standardize_type(x) if isinstance(x, str) else x)
+        print("Fuel Type column standardized.")
+
+    def fix_site_id(self):
+        """Ensures 'Site ID' is consistent in format (e.g., padded to 5 characters)."""
+        def standardize_site_id(site_id):
+            if isinstance(site_id, str) and site_id.isdigit():
+                return site_id.zfill(5)  # Pad with leading zeros
+            return str(site_id).zfill(5) if isinstance(site_id, int) else site_id
+
+        self.data['Site ID'] = self.data['Site ID'].apply(standardize_site_id)
+        print("Site ID column standardized.")
+
