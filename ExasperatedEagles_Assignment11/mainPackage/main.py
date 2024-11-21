@@ -5,7 +5,7 @@
 # Course #/Section: IS 4010-001
 # Semester/Year: Fall Semester 2024
 # Brief Description of the assignment: Clean and analyze fuel purchase data.
-# Brief Description of what this module does: Provides methods to load, clean, and save processed data.
+# Brief Description of what this module does: The main.py module serves as the primary script to manage the data cleaning process for fuel purchase data. It utilizes the DataCleaner class to sequentially load the raw dataset, apply cleaning operations, and save the cleaned data to a new file. Each step addresses specific issues such as removing duplicates, handling anomalies, and standardizing fields like transaction numbers, fuel types, and site IDs. This module ensures the dataset is consistent, accurate, and ready for further analysis.
 # Citations: chatgpt.com, copilot.com
 # Anything else that's relevant: N/A
 
@@ -31,6 +31,21 @@ if __name__ == "__main__":
     
     print("Filling missing zip codes...")
     cleaner.fill_missing_zip_codes()
+
+    print("Clean transaction number...")
+    cleaner.clean_transaction_number()
+
+    print("Clean fuel quantity...")
+    cleaner.clean_fuel_quantity()
+
+    print("Fix full address...")
+    cleaner.fix_full_address()
+
+    print("Standardize fuel type...")
+    cleaner.standardize_fuel_type()
+
+    print("Fix site id...")
+    cleaner.fix_site_id()
     
     print("Saving cleaned data...")
     cleaner.save_clean_data()

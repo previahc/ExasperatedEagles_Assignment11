@@ -5,7 +5,7 @@
 # Course #/Section: IS 4010-001
 # Semester/Year: Fall Semester 2024
 # Brief Description of the assignment: Clean and analyze fuel purchase data.
-# Brief Description of what this module does: This module defines a DataCleaner class, which provides methods to load, clean, and process fuel purchase data from a CSV file. It performs various data cleaning operations, including removing duplicates, handling anomalies, standardizing fields, filling missing values using an external API, and fixing formatting inconsistencies. The module ensures data quality and prepares the dataset for analysis, saving the cleaned data to a new file for further use.
+# Brief Description of what this module does: This module defines the DataCleaner class, which provides methods to load, clean, and process fuel purchase data from a CSV file. It includes functionalities like removing duplicates, handling anomalies (e.g., separating "Pepsi" purchases), standardizing various columns, and filling missing values using an external API. Additionally, it addresses formatting inconsistencies in fields such as Full Address, Fuel Type, and Site ID to ensure data quality and consistency. The cleaned data is saved to a new file, making it ready for analysis and reporting.
 # Citations: chatgpt.com, copilot.com
 # Anything else that's relevant: N/A
 
@@ -123,17 +123,17 @@ class DataCleaner:
             if zip_code:
                 self.data.at[index, "Full Address"] = f"{full_address} {zip_code}"
                 print(f"Added zip code {zip_code} to address: {full_address}.")
-
     def clean_transaction_number(self):
-        """Ensures the 'Transaction Number' column is numeric and handles null/blank values."""
+        """ 
+        Ensures the 'Transaction Number' column is consistently numeric.
+        """
         self.data['Transaction Number'] = pd.to_numeric(self.data['Transaction Number'], errors='coerce')
-        self.data['Transaction Number'].fillna(0, inplace=True)  # Replace nulls with 0 or other appropriate value
         print("Transaction Number column cleaned.")
-
-    def clean_fuel_quantity(self):
-        """Ensures 'Fuel Quantity' is numeric and rounded to appropriate decimals."""
-        self.data['Fuel Quantity'] = pd.to_numeric(self.data['Fuel Quantity'], errors='coerce').round(2)
-        print("Fuel Quantity column cleaned.")
+    
+    def clean_transaction_number(self):
+            """Ensures the 'Transaction Number' column is consistently numeric."""
+            self.data['Transaction Number'] = pd.to_numeric(self.data['Transaction Number'], errors='coerce')
+            print("Transaction Number column cleaned.")
 
     def fix_full_address(self):
         """Corrects sequences in the 'Full Address' column."""
@@ -147,6 +147,11 @@ class DataCleaner:
         self.data['Full Address'] = corrected_addresses
         print("Full Address column corrected.")
 
+    def clean_fuel_quantity(self):
+        """Ensures 'Fuel Quantity' is numeric and rounded to appropriate decimals."""
+        self.data['Fuel Quantity'] = pd.to_numeric(self.data['Fuel Quantity'], errors='coerce').round(2)
+        print("Fuel Quantity column cleaned.")
+
     def standardize_fuel_type(self):
         """Standardizes 'Fuel Type' to upper case and abbreviations."""
         def standardize_type(fuel):
@@ -157,8 +162,10 @@ class DataCleaner:
                 'gas': 'GAS'
             }
             return mapping.get(fuel.lower(), fuel.upper())
-        
-        self.data['Fuel Type'] = self.data['Fuel Type'].apply(lambda x: standardize_type(x) if isinstance(x, str) else x)
+    
+        self.data['Fuel Type'] = self.data['Fuel Type'].apply(
+            lambda x: standardize_type(x) if isinstance(x, str) else x
+        )
         print("Fuel Type column standardized.")
 
     def fix_site_id(self):
@@ -170,4 +177,5 @@ class DataCleaner:
 
         self.data['Site ID'] = self.data['Site ID'].apply(standardize_site_id)
         print("Site ID column standardized.")
+
 
